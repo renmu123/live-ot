@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { LiveWS } from "bilibili-live-ws";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+console.log(route);
 
 const roomId = ref(24726627);
 
 onMounted(() => {
-  const id = Number(window.location.pathname.split("/")[1]);
+  const id = Number(route.params.roomId);
   if (id) {
     roomId.value = id;
     connect();
