@@ -6,14 +6,15 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 console.log(route);
 
-const roomId = ref(24726627);
+const roomId = ref(23555200);
 
 onMounted(() => {
-  const id = Number(route.params.roomId);
-  if (id) {
-    roomId.value = id;
-    connect();
-  }
+  // const id = Number(route.params.value.roomId);
+  // if (id) {
+  //   roomId.value = id;
+  //   connect();
+  // }
+  connect();
 });
 
 let live: LiveWS;
@@ -30,11 +31,12 @@ const createLive = () => {
 
   // @ts-ignore
   live.on("msg", (msg: any) => {
-    console.log(msg);
     if (msg.cmd === "DANMU_MSG") {
       msg.user = msg.info[2][1];
       msg.text = msg.info[1];
       dataPush(msg);
+    } else if (msg.cmd === "SEND_GIFT") {
+      console.log(msg);
     }
   });
 };
