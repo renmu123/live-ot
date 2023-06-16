@@ -7,11 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Card: typeof import('./src/components/ot/Card.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElOption: typeof import('element-plus/es')['ElOption']
+    ElRadio: typeof import('element-plus/es')['ElRadio']
+    ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSelect: typeof import('element-plus/es')['ElSelect']
+    OtCard: typeof import('./src/components/ot/otCard.vue')['default']
     OtStyle1: typeof import('./src/components/ot/otStyle1.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

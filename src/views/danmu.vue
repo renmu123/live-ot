@@ -5,8 +5,6 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
 const route = useRoute();
-const router = useRouter();
-// 27952647
 
 const roomId = ref();
 
@@ -75,7 +73,7 @@ const stop = () => {
     <div style="display: flex">
       <el-input
         v-model.number="roomId"
-        placeholder="请输入room_id"
+        placeholder="请输入房间号"
         clearable
         style="width: 200px"
       />

@@ -17,8 +17,7 @@
     "sass": "^1.63.4",
     "vue": "^3.2.47",
     "vue-clipboard3": "^2.0.0",
-    "vue-router": "^4.2.2",
-    "vuedraggable": "^4.1.0"
+    "vue-router": "^4.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",

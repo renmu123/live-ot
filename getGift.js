@@ -22,6 +22,7 @@ const getAllGift = async () => {
       gift_name: giftMap[item.gift_id]["name"],
       price: giftMap[item.gift_id]["price"],
       coin_type: giftMap[item.gift_id]["coin_type"],
+      img: giftMap[item.gift_id]["img_basic"],
     };
   });
   console.log(roomGiftList);
