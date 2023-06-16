@@ -9,17 +9,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^10.1.2",
     "axios": "^1.4.0",
     "bilibili-live-ws": "^6.2.2",
+    "element-plus": "^2.3.6",
     "lodash-es": "^4.17.21",
     "sass": "^1.63.4",
     "vue": "^3.2.47",
-    "vue-router": "^4.2.2"
+    "vue-clipboard3": "^2.0.0",
+    "vue-router": "^4.2.2",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",
     "@vitejs/plugin-vue": "^4.1.0",
     "typescript": "^5.0.2",
+    "unplugin-auto-import": "^0.16.4",
+    "unplugin-vue-components": "^0.25.1",
     "vite": "^4.3.9",
     "vue-tsc": "^1.4.2"
   }

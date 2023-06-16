@@ -17,10 +17,11 @@ const getAllGift = async () => {
   let roomGiftList = res2.data.data.room_gift_list.gold_list;
   console.log(roomGiftList);
   roomGiftList = roomGiftList.map((item) => {
-    console.log(item, item.gift_id);
     return {
       ...item,
       gift_name: giftMap[item.gift_id]["name"],
+      price: giftMap[item.gift_id]["price"],
+      coin_type: giftMap[item.gift_id]["coin_type"],
     };
   });
   console.log(roomGiftList);
