@@ -23,10 +23,12 @@
                 item.type === 2 || item.type === 4 || item.type === 5,
             }"
           >
-            <span v-if="item.type === 1 || item.type === 2"
-              >{{ (Number(item.num) / 60).toFixed(0) }}分钟</span
-            ><span v-else-if="item.type == 3">X{{ item.num }}</span>
-            <span v-else-if="item.type == 4">÷{{ item.num }}</span>
+            <span v-if="item.type === 1"
+              >+{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
+            ><span v-if="item.type === 2"
+              >-{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
+            ><span v-else-if="item.type == 3">X{{ item.second }}</span>
+            <span v-else-if="item.type == 4">÷{{ item.second }}</span>
             <span v-else-if="item.type == 5">清空</span>
           </div>
         </div>

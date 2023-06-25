@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { LiveWS } from "bilibili-live-ws";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { parse } from "@/utils/danmu";
 
 const route = useRoute();
 
@@ -31,19 +32,51 @@ const createLive = () => {
   // @ts-ignore
   live.on("live", () => {
     // @ts-ignore
-    live.on("heartbeat", console.log);
+    // live.on("heartbeat", console.log);
     ElMessage.success("连接直播间成功");
   });
 
   // @ts-ignore
   live.on("msg", (msg: any) => {
     // console.log(msg);
-    if (msg.cmd === "DANMU_MSG") {
-      msg.user = msg.info[2][1];
-      msg.text = msg.info[1];
-      dataPush(msg);
-    } else if (msg.cmd === "SEND_GIFT") {
-      console.log(msg);
+    const data = parse(msg);
+    if (data.cmd === "DANMU_MSG") {
+      const item = {
+        user: data.info.user,
+        text: data.info.text,
+      };
+      dataPush(item);
+    } else if (data.cmd === "SEND_GIFT") {
+      if (data.info.coinType === "gold") {
+        const item = {
+          user: data.info.user,
+          text: `${data.info.action} ${data.info.num}个 ${data.info.giftName}`,
+        };
+        console.log(data);
+
+        dataPush(item);
+      }
+    } else if (data.cmd === "SUPER_CHAT_MESSAGE") {
+      const item = {
+        user: data.info.user,
+        text: `${data.info.price}元SC 【${data.info.message}】`,
+      };
+      console.log(data);
+
+      dataPush(item);
+    } else if (data.cmd === "GUARD_BUY") {
+      const guardMap = {
+        1: "总督",
+        2: "提督",
+        3: "舰长",
+      };
+      const item = {
+        user: data.info.username,
+        text: `成为${guardMap[data.info.guard_level as 1 | 2 | 3]}`,
+      };
+      console.log(data);
+
+      dataPush(item);
     }
   });
 };
@@ -56,7 +89,7 @@ const dataPush = (item: any) => {
     data.value.shift();
   }
   data.value.push(item);
-  window.scrollTo(0, document.body.scrollHeight);
+  // window.scrollTo(0, document.body.scrollHeight);
 };
 
 const connect = () => {
@@ -84,8 +117,8 @@ const stop = () => {
     </div>
 
     <div class="damu-container">
-      <p class="danmu" v-for="item in data" :key="item.info[0]">
-        <span v-if="item.cmd === 'DANMU_MSG'">
+      <p class="danmu" v-for="(item, index) in data" :key="index">
+        <span>
           <span style="color: red">{{ item.user }}：</span>
           {{ item.text }}
         </span>
@@ -102,5 +135,6 @@ const stop = () => {
   margin-top: 20px;
   min-height: 40px;
   border-radius: 12px;
+  padding-left: 20px;
 }
 </style>

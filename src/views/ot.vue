@@ -23,6 +23,22 @@ import { parse } from "@/utils/danmu";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+
+onMounted(() => {
+  console.log(route.params.roomId);
+
+  // @ts-ignore
+  if (route.params.roomId) {
+    // @ts-ignore
+    roomId.value = Number(route.params.roomId);
+  }
+
+  if (roomId.value) {
+    connect();
+    ElMessage.info("正在尝试连接直播间");
+  }
+});
+
 const remainingTime = ref(0);
 const data = ref<any[]>([]);
 const load = () => {
@@ -35,9 +51,10 @@ const load = () => {
       return {
         gift_name: gift?.gift_name,
         gift_img: gift?.img,
+        gift_id: item.gift_id,
 
         type: item.type,
-        num: item.num,
+        second: item.num,
       };
     });
   }
@@ -52,7 +69,7 @@ load();
 
 setInterval(() => {
   localStorage.setItem("remainingTime", String(remainingTime.value));
-}, 5000);
+}, 10000);
 
 const roomId = ref();
 let live: LiveWS;
@@ -70,10 +87,24 @@ const createLive = () => {
   // @ts-ignore
   live.on("msg", (msg: any) => {
     // console.log(msg);
-    const parsedItem = parse(msg);
-    if (parsedItem.cmd === "SEND_GIFT") {
-      console.log(parsedItem, "parsedItem");
-      // console.log(msg);
+    const item = parse(msg);
+    console.log(item, "parsedItem");
+
+    if (item.cmd === "SEND_GIFT") {
+      const gift = data.value.find((gift) => gift.gift_id === item.info.giftId);
+      if (gift) {
+        if (gift.type === 5) {
+          remainingTime.value = 0;
+        } else if (gift.type === 4) {
+          remainingTime.value /= item.info.num * gift.second;
+        } else if (gift.type === 3) {
+          remainingTime.value *= item.info.num * gift.second;
+        } else if (gift.type === 2) {
+          remainingTime.value -= item.info.num * gift.second;
+        } else if (gift.type === 1) {
+          remainingTime.value += item.info.num * gift.second;
+        }
+      }
     }
   });
 };
