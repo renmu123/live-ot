@@ -40,7 +40,7 @@
         </el-select>
         <el-input
           v-if="element.type !== OperationEnum.clear"
-          v-model.number="element.num"
+          v-model.number="element.second"
           :placeholder="`${
             element.type === OperationEnum.plus ||
             element.type === OperationEnum.minus
@@ -55,7 +55,7 @@
             element.type === OperationEnum.minus
           "
         >
-          约{{ (Number(element.num) / 60).toFixed(0) }}分钟</span
+          约{{ (Number(element.second) / 60).toFixed(0) }}分钟</span
         >
 
         <el-button type="primary" size="default" @click="addItem(index)"
@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import giftData from "@/assets/data.json";
+import gifts from "@/assets/data.json";
 // @ts-ignore
 import { ElMessage } from "element-plus";
 import useClipboard from "vue-clipboard3";
@@ -90,7 +90,7 @@ const addItem = (index: number | undefined) => {
   const defaultItem = {
     gift_id: undefined,
     type: OperationEnum.plus,
-    num: undefined,
+    second: undefined,
     id: uuid(),
   };
   if (index !== undefined) {
@@ -106,7 +106,7 @@ const removeItem = (index: number) => {
 const valid = () => {
   const valid = data.value.every((item) => {
     return item.type !== OperationEnum.clear
-      ? item.gift_id && item.num
+      ? item.gift_id && item.second
       : item.gift_id;
   });
   if (!valid) {
@@ -142,6 +142,33 @@ const copy = async () => {
   }
 };
 
+const giftData = computed(() => {
+  const guardData = [
+    {
+      gift_id: 10003,
+      gift_name: "舰长",
+      price: 198000,
+      coin_type: "gold",
+      img: "",
+    },
+    {
+      gift_id: 10002,
+      gift_name: "提督",
+      price: 1980000,
+      coin_type: "gold",
+      img: "",
+    },
+    {
+      gift_id: 10001,
+      gift_name: "总督",
+      price: 19800000,
+      coin_type: "gold",
+      img: "",
+    },
+  ];
+  return [...guardData, ...gifts];
+});
+
 const remainingTime = ref(3600);
 const previewData = ref<any[]>([]);
 const preview = () => {
@@ -152,13 +179,13 @@ const preview = () => {
   remainingTime.value = 3600;
 
   previewData.value = data.value.map((item) => {
-    const gift = giftData.find((gift) => gift.gift_id === item.gift_id);
+    const gift = giftData.value.find((gift) => gift.gift_id === item.gift_id);
     return {
       gift_name: gift?.gift_name,
       gift_img: gift?.img,
 
       type: item.type,
-      num: item.num,
+      second: item.second,
     };
   });
   return previewData;

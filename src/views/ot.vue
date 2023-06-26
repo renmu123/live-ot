@@ -64,7 +64,7 @@ const load = () => {
         gift_id: item.gift_id,
 
         type: item.type,
-        second: item.num,
+        second: item.second,
       };
     });
   }

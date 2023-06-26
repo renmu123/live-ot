@@ -28,7 +28,7 @@
             }"
           >
             <span v-if="item.type === OperationEnum.plus"
-              >+ >+{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
+              >+{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
             ><span v-else-if="item.type === OperationEnum.minus"
               >-{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
             ><span v-else-if="item.type == OperationEnum.multiply"
