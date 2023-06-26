@@ -1,7 +1,11 @@
 import { cloneDeep } from "lodash-es";
+import { Danmu, DanmuMsg, DanmuGift, DanmuSC, DanmuGuard } from "@/types/index";
 
-export const parse = (origin: any) => {
-  const data: any = {
+export const parse = (
+  origin: any
+): DanmuMsg | DanmuGift | DanmuSC | DanmuGuard => {
+  // @ts-ignore
+  const data: Danmu = {
     info: {},
   };
   const { cmd } = cloneDeep(origin);

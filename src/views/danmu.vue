@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { LiveWS } from "bilibili-live-ws";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
+// @ts-ignore
 import { ElMessage } from "element-plus";
 import { parse } from "@/utils/danmu";
 
@@ -12,9 +13,7 @@ const roomId = ref();
 onMounted(() => {
   console.log(route.params.roomId);
 
-  // @ts-ignore
   if (route.params.roomId) {
-    // @ts-ignore
     roomId.value = Number(route.params.roomId);
   }
 
@@ -31,15 +30,11 @@ const createLive = () => {
   live.on("open", () => console.log("Connection is established"));
   // @ts-ignore
   live.on("live", () => {
-    // @ts-ignore
-    // live.on("heartbeat", console.log);
     ElMessage.success("连接直播间成功");
   });
 
-  // @ts-ignore
   live.on("msg", (msg: any) => {
-    // console.log(msg);
-    const data = parse(msg);
+    let data = parse(msg);
     if (data.cmd === "DANMU_MSG") {
       const item = {
         user: data.info.user,
@@ -72,7 +67,7 @@ const createLive = () => {
       };
       const item = {
         user: data.info.username,
-        text: `成为${guardMap[data.info.guard_level as 1 | 2 | 3]}`,
+        text: `成为${guardMap[data.info.guard_level]}`,
       };
       console.log(data);
 
@@ -81,7 +76,7 @@ const createLive = () => {
   });
 };
 
-const data = ref<any[]>([]);
+const data = ref<{ user: string; text: string }[]>([]);
 
 // 创建最大数量为大小为30的队列
 const dataPush = (item: any) => {

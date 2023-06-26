@@ -22,14 +22,15 @@ import { LiveWS } from "bilibili-live-ws";
 import { parse } from "@/utils/danmu";
 import { useRoute } from "vue-router";
 
+import type { CustomData, OperationType } from "@/types/index.d.ts";
+import { OperationEnum } from "@/types/enum";
+
 const route = useRoute();
 
 onMounted(() => {
   console.log(route.params.roomId);
 
-  // @ts-ignore
   if (route.params.roomId) {
-    // @ts-ignore
     roomId.value = Number(route.params.roomId);
   }
 
@@ -40,13 +41,22 @@ onMounted(() => {
 });
 
 const remainingTime = ref(0);
-const data = ref<any[]>([]);
+const data = ref<
+  {
+    gift_name: string | undefined;
+    gift_img: string | undefined;
+    gift_id: number;
+    type: OperationType;
+    second: number;
+  }[]
+>([]);
+
 const load = () => {
   const gift = localStorage.getItem("gift");
   if (gift) {
-    data.value = JSON.parse(gift);
+    const customData: Required<CustomData>[] = JSON.parse(gift);
 
-    data.value = data.value.map((item) => {
+    data.value = customData.map((item) => {
       const gift = giftData.find((gift) => gift.gift_id === item.gift_id);
       return {
         gift_name: gift?.gift_name,
@@ -86,22 +96,20 @@ const createLive = () => {
 
   // @ts-ignore
   live.on("msg", (msg: any) => {
-    // console.log(msg);
     const item = parse(msg);
-    console.log(item, "parsedItem");
 
     if (item.cmd === "SEND_GIFT") {
       const gift = data.value.find((gift) => gift.gift_id === item.info.giftId);
       if (gift) {
-        if (gift.type === 5) {
+        if (gift.type === OperationEnum.clear) {
           remainingTime.value = 0;
-        } else if (gift.type === 4) {
+        } else if (gift.type === OperationEnum.divide) {
           remainingTime.value /= item.info.num * gift.second;
-        } else if (gift.type === 3) {
+        } else if (gift.type === OperationEnum.multiply) {
           remainingTime.value *= item.info.num * gift.second;
-        } else if (gift.type === 2) {
+        } else if (gift.type === OperationEnum.minus) {
           remainingTime.value -= item.info.num * gift.second;
-        } else if (gift.type === 1) {
+        } else if (gift.type === OperationEnum.plus) {
           remainingTime.value += item.info.num * gift.second;
         }
       }

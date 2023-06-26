@@ -32,21 +32,29 @@
           </el-option>
         </el-select>
         <el-select v-model="element.type" placeholder="操作" filterable>
-          <el-option label="加" :value="1"> </el-option>
-          <el-option label="减" :value="2"> </el-option>
-          <el-option label="乘" :value="3"> </el-option>
-          <el-option label="除" :value="4"> </el-option>
-          <el-option label="清空" :value="5"> </el-option>
+          <el-option label="加" :value="OperationEnum.plus"> </el-option>
+          <el-option label="减" :value="OperationEnum.minus"> </el-option>
+          <el-option label="乘" :value="OperationEnum.multiply"> </el-option>
+          <el-option label="除" :value="OperationEnum.divide"> </el-option>
+          <el-option label="清空" :value="OperationEnum.clear"> </el-option>
         </el-select>
         <el-input
-          v-if="element.type !== 5"
+          v-if="element.type !== OperationEnum.clear"
           v-model.number="element.num"
           :placeholder="`${
-            element.type === 1 || element.type === 2 ? '时长（秒）' : '倍率'
+            element.type === OperationEnum.plus ||
+            element.type === OperationEnum.minus
+              ? '时长（秒）'
+              : '倍率'
           }`"
           style="width: 200px"
         ></el-input>
-        <span v-if="element.type === 1 || element.type === 2">
+        <span
+          v-if="
+            element.type === OperationEnum.plus ||
+            element.type === OperationEnum.minus
+          "
+        >
           约{{ (Number(element.num) / 60).toFixed(0) }}分钟</span
         >
 
@@ -71,37 +79,24 @@ import giftData from "@/assets/data.json";
 // @ts-ignore
 import { ElMessage } from "element-plus";
 import useClipboard from "vue-clipboard3";
+import type { CustomData } from "@/types/index.d.ts";
+import { OperationEnum } from "@/types/enum";
+import { uuid } from "@/utils";
 
 import Card from "@/components/ot/Card.vue";
 
-console.log(giftData);
-let globalId = ref(0);
-
-const data = ref<
-  {
-    gift_id: number | undefined;
-    type: 1 | 2 | 3 | 4 | 5;
-    num: number | undefined;
-    id: number;
-  }[]
->([]);
+const data = ref<CustomData[]>([]);
 const addItem = (index: number | undefined) => {
-  console.log(index);
-
+  const defaultItem = {
+    gift_id: undefined,
+    type: OperationEnum.plus,
+    num: undefined,
+    id: uuid(),
+  };
   if (index !== undefined) {
-    data.value.splice(index + 1, 0, {
-      gift_id: undefined,
-      type: 1,
-      num: undefined,
-      id: globalId.value++,
-    });
+    data.value.splice(index + 1, 0, defaultItem);
   } else {
-    data.value.push({
-      gift_id: undefined,
-      type: 1,
-      num: undefined,
-      id: globalId.value++,
-    });
+    data.value.push(defaultItem);
   }
 };
 const removeItem = (index: number) => {
@@ -110,7 +105,9 @@ const removeItem = (index: number) => {
 
 const valid = () => {
   const valid = data.value.every((item) => {
-    return item.type !== 5 ? item.gift_id && item.num : item.gift_id;
+    return item.type !== OperationEnum.clear
+      ? item.gift_id && item.num
+      : item.gift_id;
   });
   if (!valid) {
     ElMessage.error("请将数据填写完整");

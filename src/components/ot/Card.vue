@@ -18,18 +18,26 @@
           <div
             class="gift-type"
             :class="{
-              'gift-type-add': item.type === 1 || item.type === 3,
+              'gift-type-add':
+                item.type === OperationEnum.plus ||
+                item.type === OperationEnum.multiply,
               'gift-type-sub':
-                item.type === 2 || item.type === 4 || item.type === 5,
+                item.type === OperationEnum.minus ||
+                item.type === OperationEnum.divide ||
+                item.type === OperationEnum.clear,
             }"
           >
-            <span v-if="item.type === 1"
-              >+{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
-            ><span v-if="item.type === 2"
+            <span v-if="item.type === OperationEnum.plus"
+              >+ >+{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
+            ><span v-else-if="item.type === OperationEnum.minus"
               >-{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
-            ><span v-else-if="item.type == 3">X{{ item.second }}</span>
-            <span v-else-if="item.type == 4">÷{{ item.second }}</span>
-            <span v-else-if="item.type == 5">清空</span>
+            ><span v-else-if="item.type == OperationEnum.multiply"
+              >X{{ item.second }}</span
+            >
+            <span v-else-if="item.type == OperationEnum.divide"
+              >÷{{ item.second }}</span
+            >
+            <span v-else-if="item.type == OperationEnum.clear">清空</span>
           </div>
         </div>
       </div>
@@ -39,9 +47,16 @@
 
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
+import type { OperationType } from "@/types/index.d.ts";
+import { OperationEnum } from "@/types/enum";
 
 interface Props {
-  gifts: any[];
+  gifts: {
+    gift_img?: string;
+    gift_name?: string;
+    type: OperationType;
+    second: number;
+  }[];
   remainingTime: number;
 }
 
