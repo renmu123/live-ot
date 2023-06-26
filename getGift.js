@@ -25,9 +25,35 @@ const getAllGift = async () => {
       img: giftMap[item.gift_id]["img_basic"],
     };
   });
-  console.log(roomGiftList);
 
-  fs.writeFileSync("data.json", JSON.stringify(roomGiftList));
+  const guardData = [
+    {
+      gift_id: 10003,
+      gift_name: "舰长",
+      price: 198000,
+      coin_type: "gold",
+      img: "",
+    },
+    {
+      gift_id: 10002,
+      gift_name: "提督",
+      price: 1980000,
+      coin_type: "gold",
+      img: "",
+    },
+    {
+      gift_id: 10001,
+      gift_name: "总督",
+      price: 19800000,
+      coin_type: "gold",
+      img: "",
+    },
+  ];
+
+  fs.writeFileSync(
+    "data.json",
+    JSON.stringify([...guardData, ...roomGiftList])
+  );
 };
 
 getAllGift();

@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import gifts from "@/assets/data.json";
+import giftData from "@/assets/data.json";
 // @ts-ignore
 import { ElMessage } from "element-plus";
 import useClipboard from "vue-clipboard3";
@@ -142,33 +142,6 @@ const copy = async () => {
   }
 };
 
-const giftData = computed(() => {
-  const guardData = [
-    {
-      gift_id: 10003,
-      gift_name: "舰长",
-      price: 198000,
-      coin_type: "gold",
-      img: "",
-    },
-    {
-      gift_id: 10002,
-      gift_name: "提督",
-      price: 1980000,
-      coin_type: "gold",
-      img: "",
-    },
-    {
-      gift_id: 10001,
-      gift_name: "总督",
-      price: 19800000,
-      coin_type: "gold",
-      img: "",
-    },
-  ];
-  return [...guardData, ...gifts];
-});
-
 const remainingTime = ref(3600);
 const previewData = ref<any[]>([]);
 const preview = () => {
@@ -179,7 +152,7 @@ const preview = () => {
   remainingTime.value = 3600;
 
   previewData.value = data.value.map((item) => {
-    const gift = giftData.value.find((gift) => gift.gift_id === item.gift_id);
+    const gift = giftData.find((gift) => gift.gift_id === item.gift_id);
     return {
       gift_name: gift?.gift_name,
       gift_img: gift?.img,
