@@ -65,11 +65,6 @@ const emits = defineEmits(["update:remainingTime"]);
 
 const remainingTime = useVModel(props, "remainingTime", emits);
 
-setInterval(() => {
-  if (remainingTime.value <= 0) return;
-  remainingTime.value = remainingTime.value - 1;
-}, 1000);
-
 const remainingText = computed(() => {
   const hour = Math.floor(remainingTime.value / 3600);
   const minute = Math.floor((remainingTime.value % 3600) / 60);
@@ -83,7 +78,7 @@ const remainingText = computed(() => {
   width: 300px;
   .remaining-time {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
   .gift-container {
     width: 100%;
@@ -95,6 +90,7 @@ const remainingText = computed(() => {
       align-items: center;
       width: 50%;
       text-align: center;
+      margin-top: 5px;
       .gift-img-container {
         margin-right: 10px;
         .gift-img {

@@ -1,12 +1,41 @@
 <template>
   <div>
     <div style="margin-bottom: 20px">
-      <el-button type="primary" size="default" @click="saveGift"
-        >保存</el-button
+      房间号：
+      <el-input
+        v-model.number="roomId"
+        placeholder="请输入房间号"
+        clearable
+        style="width: 200px"
+      />
+      <el-button type="primary" @click="connect" style="margin-left: 10px"
+        >开始加班！</el-button
       >
-      <el-button type="primary" size="default" @click="preview">预览</el-button>
-      <el-button type="primary" size="default" @click="copy"
-        >复制OBS地址</el-button
+      <el-button type="primary" @click="stop" style="margin-left: 10px"
+        >暂停一下</el-button
+      >
+    </div>
+    <div style="margin-bottom: 20px">
+      初始时间（秒）：<el-input
+        v-model.number="initTime.hour"
+        placeholder="时间（小时）"
+        clearable
+        style="width: 100px"
+      />
+      <el-input
+        v-model.number="initTime.minute"
+        placeholder="时间（分钟）"
+        clearable
+        style="width: 100px; margin-left: 5px"
+      />
+      <el-input
+        v-model.number="initTime.second"
+        placeholder="时间（秒）"
+        clearable
+        style="width: 100px; margin-left: 5px"
+      />
+      <el-button type="warning" @click="resetTime" style="margin-left: 10px"
+        >重置时间</el-button
       >
     </div>
     <div v-for="(element, index) in data" :key="index">
@@ -22,6 +51,7 @@
           v-model="element.gift_id"
           placeholder="请选择礼物"
           filterable
+          class="width-medium"
         >
           <el-option
             v-for="item in giftData"
@@ -31,7 +61,12 @@
           >
           </el-option>
         </el-select>
-        <el-select v-model="element.type" placeholder="操作" filterable>
+        <el-select
+          v-model="element.type"
+          placeholder="操作"
+          filterable
+          style="width: 80px"
+        >
           <el-option label="加" :value="OperationEnum.plus"> </el-option>
           <el-option label="减" :value="OperationEnum.minus"> </el-option>
           <el-option label="乘" :value="OperationEnum.multiply"> </el-option>
@@ -47,7 +82,7 @@
               ? '时长（秒）'
               : '倍率'
           }`"
-          style="width: 200px"
+          style="width: 100px"
         ></el-input>
         <span
           v-if="
@@ -66,11 +101,7 @@
       </div>
     </div>
 
-    <Card
-      :gifts="previewData"
-      v-model:remainingTime="remainingTime"
-      v-if="previewData.length > 0"
-    ></Card>
+    <Ot ref="otRef" class="ot"></Ot>
   </div>
 </template>
 
@@ -78,12 +109,13 @@
 import giftData from "@/assets/data.json";
 // @ts-ignore
 import { ElMessage } from "element-plus";
-import useClipboard from "vue-clipboard3";
+// import useClipboard from "vue-clipboard3";
 import type { CustomData } from "@/types/index.d.ts";
 import { OperationEnum } from "@/types/enum";
 import { uuid } from "@/utils";
 
-import Card from "@/components/ot/Card.vue";
+// import Card from "@/components/Card.vue";
+import Ot from "@/components/ot.vue";
 
 const data = ref<CustomData[]>([]);
 const addItem = (index: number | undefined) => {
@@ -120,7 +152,7 @@ const saveGift = () => {
     return;
   }
   localStorage.setItem("gift", JSON.stringify(data.value));
-  ElMessage.success("保存成功");
+  ElMessage.success("保存配置成功");
 };
 
 const load = () => {
@@ -132,39 +164,74 @@ const load = () => {
   }
 };
 
-const { toClipboard } = useClipboard();
-const copy = async () => {
-  try {
-    await toClipboard("ppp");
-    ElMessage("复制成功，请在obs中贴入网站");
-  } catch (e) {
-    ElMessage("复制失败");
-  }
-};
+load();
 
-const remainingTime = ref(3600);
-const previewData = ref<any[]>([]);
-const preview = () => {
-  if (!valid()) {
+const route = useRoute();
+const router = useRouter();
+const roomId = ref();
+
+onMounted(() => {
+  if (route.query.id) {
+    roomId.value = Number(route.query.id);
+  }
+});
+
+const otRef = ref();
+const connect = () => {
+  if (!roomId.value) {
+    ElMessage.error("请先输入房间号");
     return;
   }
-
-  remainingTime.value = 3600;
-
-  previewData.value = data.value.map((item) => {
-    const gift = giftData.find((gift) => gift.gift_id === item.gift_id);
-    return {
-      gift_name: gift?.gift_name,
-      gift_img: gift?.img,
-
-      type: item.type,
-      second: item.second,
-    };
+  router.push({
+    query: {
+      id: roomId.value,
+    },
   });
-  return previewData;
+  saveGift();
+
+  otRef.value.start();
+};
+const stop = () => {
+  otRef.value.stop();
 };
 
-load();
+const initTime = ref<{
+  hour?: number;
+  minute?: number;
+  second?: number;
+}>({
+  hour: undefined,
+  minute: undefined,
+  second: undefined,
+});
+
+const resetTime = () => {
+  if (
+    isNaN(Number(initTime.value.hour)) ||
+    isNaN(Number(initTime.value.minute)) ||
+    isNaN(Number(initTime.value.second))
+  ) {
+    ElMessage.error("时间必须为数字");
+    return;
+  }
+  const status = window.confirm("确定要重置时间吗？重置后无法恢复");
+  if (!status) return;
+  const seconds =
+    (initTime.value.hour ?? 0) * 3600 +
+    (initTime.value.minute ?? 0) * 60 +
+    (initTime.value.second ?? 0);
+  otRef.value.setTime(seconds);
+};
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.width-medium {
+  width: 160px;
+}
+
+.ot {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+</style>

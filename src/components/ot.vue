@@ -1,22 +1,9 @@
 <template>
   <Card :gifts="data" v-model:remaining-time="remainingTime"></Card>
-
-  <div style="display: flex; position: absolute; right: 20px; top: 20px">
-    <el-input
-      v-model.number="roomId"
-      placeholder="请输入房间号"
-      clearable
-      style="width: 200px"
-    />
-    <el-button type="primary" @click="connect" style="margin-left: 10px"
-      >连接</el-button
-    >
-    <el-button type="danger" @click="stop">断开连接</el-button>
-  </div>
 </template>
 
 <script setup lang="ts">
-import Card from "@/components/ot/Card.vue";
+import Card from "./Card.vue";
 import giftData from "@/assets/data.json";
 import { LiveWS } from "bilibili-live-ws";
 import { parse } from "@/utils/danmu";
@@ -26,19 +13,6 @@ import type { CustomData, OperationType } from "@/types/index.d.ts";
 import { OperationEnum } from "@/types/enum";
 
 const route = useRoute();
-
-onMounted(() => {
-  console.log(route.params.roomId);
-
-  if (route.params.roomId) {
-    roomId.value = Number(route.params.roomId);
-  }
-
-  if (roomId.value) {
-    connect();
-    ElMessage.info("正在尝试连接直播间");
-  }
-});
 
 const remainingTime = ref(0);
 const data = ref<
@@ -75,12 +49,6 @@ const load = () => {
   }
 };
 
-load();
-
-setInterval(() => {
-  localStorage.setItem("remainingTime", String(remainingTime.value));
-}, 10000);
-
 const roomId = ref();
 let live: LiveWS;
 const createLive = () => {
@@ -101,16 +69,17 @@ const createLive = () => {
     if (item.cmd === "SEND_GIFT") {
       const gift = data.value.find((gift) => gift.gift_id === item.info.giftId);
       if (gift) {
+        const time = item.info.num * (gift.second ?? 0);
         if (gift.type === OperationEnum.clear) {
           remainingTime.value = 0;
         } else if (gift.type === OperationEnum.divide) {
-          remainingTime.value /= item.info.num * gift.second;
+          remainingTime.value /= time;
         } else if (gift.type === OperationEnum.multiply) {
-          remainingTime.value *= item.info.num * gift.second;
+          remainingTime.value *= time;
         } else if (gift.type === OperationEnum.minus) {
-          remainingTime.value -= item.info.num * gift.second;
+          remainingTime.value -= time;
         } else if (gift.type === OperationEnum.plus) {
-          remainingTime.value += item.info.num * gift.second;
+          remainingTime.value += time;
         }
       }
     }
@@ -120,14 +89,60 @@ const createLive = () => {
 const connect = () => {
   createLive();
 };
-const stop = () => {
+const unconnect = () => {
   live.close();
+  // live = null;
 };
 
-onMounted(() => {
-  if (route.query.roomId) {
-    roomId.value = Number(route.query.roomId);
+const runing = ref(false);
+const start = () => {
+  if (!route.query.id) {
+    ElMessage.error("请先输入房间号");
+    return;
+  }
+  roomId.value = Number(route.query.id);
+  load();
+  if (!runing.value) {
     connect();
+    runing.value = true;
+  }
+};
+
+const stop = () => {
+  if (runing.value) {
+    unconnect();
+    runing.value = false;
+    localStorage.setItem("remainingTime", String(remainingTime.value));
+  }
+};
+
+const setTime = (time: number) => {
+  remainingTime.value = time;
+  localStorage.setItem("remainingTime", String(remainingTime.value));
+};
+
+setInterval(() => {
+  if (runing.value) {
+    localStorage.setItem("remainingTime", String(remainingTime.value));
+  }
+}, 10000);
+
+setInterval(() => {
+  if (!runing.value) return;
+  if (remainingTime.value <= 0) return;
+  remainingTime.value = remainingTime.value - 1;
+}, 1000);
+
+defineExpose({
+  start,
+  stop,
+  setTime,
+});
+
+onMounted(() => {
+  const remaining = localStorage.getItem("remainingTime");
+  if (remaining) {
+    remainingTime.value = Number(remaining);
   }
 });
 </script>
