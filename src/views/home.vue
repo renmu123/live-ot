@@ -177,7 +177,7 @@ onMounted(() => {
 });
 
 const otRef = ref();
-const connect = () => {
+const connect = async () => {
   if (!roomId.value) {
     ElMessage.error("请先输入房间号");
     return;
@@ -188,7 +188,7 @@ const connect = () => {
     },
   });
   saveGift();
-
+  await nextTick();
   otRef.value.start();
 };
 const stop = () => {
@@ -232,6 +232,6 @@ const resetTime = () => {
 .ot {
   position: absolute;
   right: 0;
-  top: 0;
+  top: 20px;
 }
 </style>

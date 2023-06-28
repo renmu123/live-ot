@@ -8,11 +8,13 @@ import giftData from "@/assets/data.json";
 import { LiveWS } from "bilibili-live-ws";
 import { parse } from "@/utils/danmu";
 import { useRoute } from "vue-router";
+import MyWorker from "@/worker/worker?worker";
 
 import type { CustomData, OperationType } from "@/types/index.d.ts";
 import { OperationEnum } from "@/types/enum";
 
 const route = useRoute();
+const worker = new MyWorker();
 
 const remainingTime = ref(0);
 const data = ref<
@@ -105,6 +107,19 @@ const start = () => {
   if (!runing.value) {
     connect();
     runing.value = true;
+    worker.postMessage({
+      cmd: "start",
+      data: remainingTime.value,
+    });
+  }
+};
+
+worker.onmessage = function (e) {
+  if (e.data.cmd === "save") {
+    if (!runing.value) return;
+    if (remainingTime.value <= 0) return;
+    remainingTime.value = remainingTime.value - 1;
+    localStorage.setItem("remainingTime", String(remainingTime.value));
   }
 };
 
@@ -113,6 +128,10 @@ const stop = () => {
     unconnect();
     runing.value = false;
     localStorage.setItem("remainingTime", String(remainingTime.value));
+    worker.postMessage({
+      cmd: "stop",
+      data: remainingTime.value,
+    });
   }
 };
 
@@ -120,18 +139,6 @@ const setTime = (time: number) => {
   remainingTime.value = time;
   localStorage.setItem("remainingTime", String(remainingTime.value));
 };
-
-setInterval(() => {
-  if (runing.value) {
-    localStorage.setItem("remainingTime", String(remainingTime.value));
-  }
-}, 10000);
-
-setInterval(() => {
-  if (!runing.value) return;
-  if (remainingTime.value <= 0) return;
-  remainingTime.value = remainingTime.value - 1;
-}, 1000);
 
 defineExpose({
   start,
