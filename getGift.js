@@ -32,21 +32,21 @@ const getAllGift = async () => {
       gift_name: "舰长",
       price: 198000,
       coin_type: "gold",
-      img: "",
+      img: "https://s1.hdslb.com/bfs/static/blive/blfe-live-room/static/img/icon-l-3.402ac8f..png",
     },
     {
       gift_id: 10002,
       gift_name: "提督",
       price: 1980000,
       coin_type: "gold",
-      img: "",
+      img: "https://s1.hdslb.com/bfs/static/blive/blfe-live-room/static/img/icon-l-2.6f68d77..png",
     },
     {
       gift_id: 10001,
       gift_name: "总督",
       price: 19800000,
       coin_type: "gold",
-      img: "",
+      img: "https://s1.hdslb.com/bfs/static/blive/blfe-live-room/static/img/icon-l-1.fde1190..png",
     },
   ];
 
