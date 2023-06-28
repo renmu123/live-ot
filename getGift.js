@@ -8,7 +8,6 @@ const getAllGift = async () => {
   );
   const giftList = res1.data.data.list;
   const giftMap = keyBy(giftList, "id");
-  // console.log(giftMap);
 
   const res2 = await axios.get(
     "https://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftData?room_id=10882247&ruid=10995238&area_id=377&area_parent_id=11&platform=pc&source=live"
@@ -25,6 +24,7 @@ const getAllGift = async () => {
       img: giftMap[item.gift_id]["img_basic"],
     };
   });
+  roomGiftList = roomGiftList.sort((a, b) => a.price - b.price);
 
   const guardData = [
     {
