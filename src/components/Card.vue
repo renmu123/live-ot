@@ -28,14 +28,14 @@
             }"
           >
             <span v-if="item.type === OperationEnum.plus"
-              >+{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
+              >+{{ (Number(item.param) / 60).toFixed(0) }}分钟</span
             ><span v-else-if="item.type === OperationEnum.minus"
-              >-{{ (Number(item.second) / 60).toFixed(0) }}分钟</span
+              >-{{ (Number(item.param) / 60).toFixed(0) }}分钟</span
             ><span v-else-if="item.type == OperationEnum.multiply"
-              >X{{ item.second }}</span
+              >X{{ item.param }}</span
             >
             <span v-else-if="item.type == OperationEnum.divide"
-              >÷{{ item.second }}</span
+              >÷{{ item.param }}</span
             >
             <span v-else-if="item.type == OperationEnum.clear">清空</span>
           </div>
@@ -55,7 +55,7 @@ interface Props {
     gift_img?: string;
     gift_name?: string;
     type: OperationType;
-    second: number;
+    param: number;
   }[];
   remainingTime: number;
 }

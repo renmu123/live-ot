@@ -7,12 +7,9 @@ import Card from "./Card.vue";
 import giftData from "@/assets/data.json";
 import { LiveWS } from "bilibili-live-ws";
 import { parse } from "@/utils/danmu";
-import { useRoute } from "vue-router";
 
 import type { CustomData, OperationType } from "@/types/index.d.ts";
 import { OperationEnum } from "@/types/enum";
-
-const route = useRoute();
 
 const remainingTime = ref(0);
 const data = ref<
@@ -21,7 +18,7 @@ const data = ref<
     gift_img: string | undefined;
     gift_id: number;
     type: OperationType;
-    second: number;
+    param: number;
   }[]
 >([]);
 
@@ -31,6 +28,14 @@ const load = () => {
     const customData: Required<CustomData>[] = JSON.parse(gift);
 
     data.value = customData.map((item) => {
+      let param = item.param;
+      if (
+        item.type === OperationEnum.plus ||
+        item.type === OperationEnum.minus
+      ) {
+        param = item.hour * 3600 + item.minute * 60 + item.second;
+      }
+
       const gift = giftData.find((gift) => gift.gift_id === item.gift_id);
       return {
         gift_name: gift?.gift_name,
@@ -38,7 +43,7 @@ const load = () => {
         gift_id: item.gift_id,
 
         type: item.type,
-        second: item.second,
+        param: param,
       };
     });
   }
@@ -69,7 +74,7 @@ const createLive = () => {
     if (item.cmd === "SEND_GIFT") {
       const gift = data.value.find((gift) => gift.gift_id === item.info.giftId);
       if (gift) {
-        const time = item.info.num * (gift.second ?? 0);
+        const time = item.info.num * (gift.param ?? 0);
         if (gift.type === OperationEnum.clear) {
           remainingTime.value = 0;
         } else if (gift.type === OperationEnum.divide) {
@@ -95,12 +100,8 @@ const unconnect = () => {
 };
 
 const runing = ref(false);
-const start = () => {
-  if (!route.query.id) {
-    ElMessage.error("请先输入房间号");
-    return;
-  }
-  roomId.value = Number(route.query.id);
+const start = (id: number) => {
+  roomId.value = id;
   load();
   if (!runing.value) {
     connect();

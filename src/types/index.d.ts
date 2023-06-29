@@ -61,6 +61,9 @@ export interface DanmuGuard extends Danmu {
 export interface CustomData {
   gift_id?: number;
   type: OperationType;
+  hour?: number;
+  minute?: number;
   second?: number;
+  param?: number;
   id: string;
 }

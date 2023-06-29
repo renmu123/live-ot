@@ -16,26 +16,26 @@
       >
     </div>
     <div style="margin-bottom: 20px">
-      初始时间（秒）：<el-input
+      初始时长：<el-input
         v-model.number="initTime.hour"
-        placeholder="时间（小时）"
+        placeholder="小时"
         clearable
         style="width: 100px"
       />
       <el-input
         v-model.number="initTime.minute"
-        placeholder="时间（分钟）"
+        placeholder="分钟"
         clearable
         style="width: 100px; margin-left: 5px"
       />
       <el-input
         v-model.number="initTime.second"
-        placeholder="时间（秒）"
+        placeholder="秒"
         clearable
         style="width: 100px; margin-left: 5px"
       />
       <el-button type="warning" @click="resetTime" style="margin-left: 10px"
-        >重置时间</el-button
+        >设置时长</el-button
       >
     </div>
     <div v-for="(element, index) in data" :key="index">
@@ -73,25 +73,40 @@
           <el-option label="除" :value="OperationEnum.divide"> </el-option>
           <el-option label="清空" :value="OperationEnum.clear"> </el-option>
         </el-select>
-        <el-input
-          v-if="element.type !== OperationEnum.clear"
-          v-model.number="element.second"
-          :placeholder="`${
-            element.type === OperationEnum.plus ||
-            element.type === OperationEnum.minus
-              ? '时长（秒）'
-              : '倍率'
-          }`"
-          style="width: 100px"
-        ></el-input>
-        <span
+        <template
           v-if="
             element.type === OperationEnum.plus ||
             element.type === OperationEnum.minus
           "
         >
-          约{{ (Number(element.second) / 60).toFixed(0) }}分钟</span
+          <el-input
+            v-model.number="element.hour"
+            placeholder="小时"
+            style="width: 100px"
+          ></el-input>
+          <el-input
+            v-model.number="element.minute"
+            placeholder="分钟"
+            style="width: 100px"
+          ></el-input>
+          <el-input
+            v-model.number="element.second"
+            placeholder="秒"
+            style="width: 100px"
+          ></el-input>
+        </template>
+        <template
+          v-if="
+            element.type === OperationEnum.multiply ||
+            element.type === OperationEnum.divide
+          "
         >
+          <el-input
+            v-model="element.param"
+            placeholder="倍率"
+            style="width: 100px"
+          ></el-input>
+        </template>
 
         <el-button type="primary" size="default" @click="addItem(index)"
           >新增一项</el-button
@@ -109,12 +124,10 @@
 import giftData from "@/assets/data.json";
 // @ts-ignore
 import { ElMessage } from "element-plus";
-// import useClipboard from "vue-clipboard3";
 import type { CustomData } from "@/types/index.d.ts";
 import { OperationEnum } from "@/types/enum";
 import { uuid } from "@/utils";
 
-// import Card from "@/components/Card.vue";
 import Ot from "@/components/ot.vue";
 
 const data = ref<CustomData[]>([]);
@@ -122,6 +135,8 @@ const addItem = (index: number | undefined) => {
   const defaultItem = {
     gift_id: undefined,
     type: OperationEnum.plus,
+    hour: undefined,
+    minute: undefined,
     second: undefined,
     id: uuid(),
   };
@@ -136,21 +151,54 @@ const removeItem = (index: number) => {
 };
 
 const valid = () => {
-  const valid = data.value.every((item) => {
-    return item.type !== OperationEnum.clear
-      ? item.gift_id && item.second
-      : item.gift_id;
+  let valid = true;
+  data.value.forEach((item) => {
+    if (item.type !== OperationEnum.clear) {
+      if (
+        item.type === OperationEnum.plus ||
+        item.type === OperationEnum.minus
+      ) {
+        if (item.hour === undefined) {
+          item.hour = 0;
+        }
+        if (item.minute === undefined) {
+          item.minute = 0;
+        }
+        if (item.second === undefined) {
+          item.second = 0;
+        }
+        if (
+          isNaN(Number(item.hour)) ||
+          isNaN(Number(item.minute)) ||
+          isNaN(Number(item.second))
+        ) {
+          valid = false;
+        }
+      } else if (
+        item.type === OperationEnum.multiply ||
+        item.type === OperationEnum.divide
+      ) {
+        if (item.param === undefined) {
+          item.param = 1;
+        }
+        if (isNaN(Number(item.param))) {
+          valid = false;
+        }
+      }
+    }
   });
+
   if (!valid) {
-    ElMessage.error("请将数据填写完整");
+    const msg = "数据不完整或格式有误";
+    ElMessage.error(msg);
+    throw new Error(msg);
   }
   return valid;
 };
 
 const saveGift = () => {
-  if (!valid()) {
-    return;
-  }
+  valid();
+
   localStorage.setItem("gift", JSON.stringify(data.value));
   ElMessage.success("保存配置成功");
 };
@@ -189,8 +237,7 @@ const connect = async () => {
   });
   await nextTick();
   saveGift();
-
-  otRef.value.start();
+  otRef.value.start(roomId.value);
 };
 const stop = () => {
   otRef.value.stop();
@@ -207,6 +254,16 @@ const initTime = ref<{
 });
 
 const resetTime = () => {
+  if (initTime.value.hour === undefined) {
+    initTime.value.hour = 0;
+  }
+  if (initTime.value.minute === undefined) {
+    initTime.value.minute = 0;
+  }
+  if (initTime.value.second === undefined) {
+    initTime.value.second = 0;
+  }
+
   if (
     isNaN(Number(initTime.value.hour)) ||
     isNaN(Number(initTime.value.minute)) ||
