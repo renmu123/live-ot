@@ -272,8 +272,8 @@ const resetTime = () => {
     ElMessage.error("时间必须为数字");
     return;
   }
-  const status = window.confirm("确定要重置时间吗？重置后无法恢复");
-  if (!status) return;
+  // const status = window.confirm("确定要重置时间吗？重置后无法恢复");
+  // if (!status) return;
   const seconds =
     (initTime.value.hour ?? 0) * 3600 +
     (initTime.value.minute ?? 0) * 60 +
