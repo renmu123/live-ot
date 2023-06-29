@@ -14,6 +14,9 @@
       <el-button type="primary" @click="stop" style="margin-left: 10px"
         >暂停一下</el-button
       >
+      <el-button type="primary" @click="addItem" style="margin-left: 10px"
+        >新增一项</el-button
+      >
       <div style="display: inline-flex; align-items: center; margin-left: 10px">
         关于作者<a
           href="https://space.bilibili.com/10995238"
