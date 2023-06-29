@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="remaining-time">
-      <div>剩余时间</div>
+      <div>距离下班时间</div>
       <div>
         {{ remainingText }}
       </div>
