@@ -14,6 +14,13 @@
       <el-button type="primary" @click="stop" style="margin-left: 10px"
         >暂停一下</el-button
       >
+      <div style="display: inline-flex; align-items: center; margin-left: 10px">
+        关于作者<a
+          href="https://space.bilibili.com/10995238"
+          target="_blank"
+          class="author"
+        ></a>
+      </div>
     </div>
     <div style="margin-bottom: 20px">
       初始时长：<el-input
@@ -291,5 +298,15 @@ const resetTime = () => {
   position: absolute;
   right: 0;
   top: 20px;
+}
+
+.author {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: url("../assets/author.jpg") no-repeat;
+  display: inline-block;
+  background-size: cover;
+  margin-left: 5px;
 }
 </style>
