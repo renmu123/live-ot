@@ -3,7 +3,6 @@
 这是一个 B 站直播的娱乐玩法，用处是根据用户送的礼物来增加相应的直播时长，增加一定的娱乐互动效果。~~骗观众打更多的米。~~ ~~我的直播间没人，我也不知道有没有 bug~~
 ![Snipaste_2023-07-03_11-24-52](https://github.com/renmu123/live-ot/assets/26896790/6c6c3070-97fb-4bad-af0e-a187421c78f0)
 
-
 # 使用
 
 在线地址：https://live.eif93.love/
@@ -19,6 +18,8 @@
 
 # 开发
 
+node 最低版本为 16
+
 1. `git clone https://github.com/renmu123/live-ot.git`
 2. `cd live-ot`
 3. `npm install`
@@ -32,3 +33,9 @@
 4. `npm run build`
 
 如果想要更新礼物数据，运行 `npm run updateGift` 或者 `node getGift.js`，可以修改其中的参数，不同的直播间以及分区的礼物可能会有不同。
+
+# 更新记录
+
+## 1.0.0
+
+主要功能完成了！！
