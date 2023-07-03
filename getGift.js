@@ -1,16 +1,21 @@
 import axios from "axios";
 import { keyBy } from "lodash-es";
 import fs from "fs";
+import path from "path";
 
 const getAllGift = async () => {
+  const ROOM_ID = 10882247; // 房间号
+  const AREA_PARENT_ID = 11; // 大分区ID
+  const AREA_ID = 377; // 小分区ID
+
   const res1 = await axios.get(
-    "https://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftConfig?platform=pc&room_id=10882247&area_parent_id=11&area_id=377"
+    `https://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftConfig?platform=pc&room_id=${ROOM_ID}&area_parent_id=${AREA_PARENT_ID}&area_id=${AREA_ID}`
   );
   const giftList = res1.data.data.list;
   const giftMap = keyBy(giftList, "id");
 
   const res2 = await axios.get(
-    "https://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftData?room_id=10882247&ruid=10995238&area_id=377&area_parent_id=11&platform=pc&source=live"
+    `https://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftData?room_id=${ROOM_ID}&ruid=${AREA_PARENT_ID}&area_id=377&area_parent_id=${AREA_ID}&platform=pc&source=live`
   );
 
   let roomGiftList = res2.data.data.room_gift_list.gold_list;
@@ -51,7 +56,7 @@ const getAllGift = async () => {
   ];
 
   fs.writeFileSync(
-    "data.json",
+    path.join("src", "assets", "data.json"),
     JSON.stringify([...guardData, ...roomGiftList])
   );
 };

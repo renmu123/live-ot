@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="remaining-time">
-      <div>距离下班时间</div>
-      <div>
+    <div class="remaining-time-container">
+      <div class="remaining-time-title">距离下班时间</div>
+      <div class="remaining-time-value">
         {{ remainingText }}
       </div>
     </div>
@@ -76,7 +76,7 @@ const remainingText = computed(() => {
 <style scoped lang="scss">
 .container {
   width: 300px;
-  .remaining-time {
+  .remaining-time-container {
     text-align: center;
     margin-bottom: 15px;
   }
@@ -84,11 +84,12 @@ const remainingText = computed(() => {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
 
     .gift-item {
       display: flex;
       align-items: center;
-      width: 50%;
+      width: 48%;
       text-align: center;
       margin-top: 5px;
       .gift-img-container {
