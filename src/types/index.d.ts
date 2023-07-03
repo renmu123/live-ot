@@ -51,7 +51,7 @@ export interface DanmuGuard extends Danmu {
     guard_level: GuardType;
     num: number;
     price: number;
-    gift_id: number;
+    giftId: number;
     gift_name: string;
     start_time: number;
     end_time: number;

@@ -26,6 +26,7 @@ export const parse = (
     data.info.message = origin.data.message;
     data.info.price = origin.data.price;
   } else if (cmd === "GUARD_BUY") {
+    origin.giftId = origin.gift_id;
     data.info = origin.data; // guard_level=3舰长，2提督，1总督
     // 'uid': 51553397,
     // 'username': 'kimikimi1721',

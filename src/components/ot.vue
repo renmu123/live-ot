@@ -71,7 +71,8 @@ const createLive = () => {
   live.on("msg", (msg: any) => {
     const item = parse(msg);
 
-    if (item.cmd === "SEND_GIFT") {
+    if (item.cmd === "SEND_GIFT" || item.cmd === "GUARD_BUY") {
+      // console.log(item);
       const gift = data.value.find((gift) => gift.gift_id === item.info.giftId);
       if (gift) {
         const time = item.info.num * (gift.param ?? 0);
