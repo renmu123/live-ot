@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <Ot ref="otRef" class="ot"></Ot>
+
+  <div class="config-container">
     <div style="margin-bottom: 20px">
       房间号：
       <el-input
@@ -13,9 +15,6 @@
       >
       <el-button type="primary" @click="stop" style="margin-left: 10px"
         >暂停一下</el-button
-      >
-      <el-button type="primary" @click="addItem" style="margin-left: 10px"
-        >新增一项</el-button
       >
       <div style="display: inline-flex; align-items: center; margin-left: 10px">
         关于作者<a
@@ -46,6 +45,9 @@
       />
       <el-button type="warning" @click="resetTime" style="margin-left: 10px"
         >设置时长</el-button
+      >
+      <el-button type="primary" @click="showLiveTime"
+        >切换开播时长显示</el-button
       >
     </div>
     <div v-for="(element, index) in data" :key="index">
@@ -93,16 +95,19 @@
             v-model.number="element.hour"
             placeholder="小时"
             style="width: 100px"
+            title="小时"
           ></el-input>
           <el-input
             v-model.number="element.minute"
             placeholder="分钟"
             style="width: 100px"
+            title="分钟"
           ></el-input>
           <el-input
             v-model.number="element.second"
             placeholder="秒"
             style="width: 100px"
+            title="秒"
           ></el-input>
         </template>
         <template
@@ -120,13 +125,15 @@
 
         <el-button type="primary" size="default" @click="addItem(index)"
           >新增一项</el-button
-        ><el-button type="danger" size="default" @click="removeItem(index)"
+        ><el-button
+          type="danger"
+          size="default"
+          @click="removeItem(index)"
+          v-if="data.length !== 1"
           >删除</el-button
         >
       </div>
     </div>
-
-    <Ot ref="otRef" class="ot"></Ot>
   </div>
 </template>
 
@@ -290,26 +297,33 @@ const resetTime = () => {
     (initTime.value.second ?? 0);
   otRef.value.setTime(seconds);
 };
+
+const showLiveTime = () => {
+  otRef.value.setConfig("showDuration", !otRef.value.config.showDuration);
+};
 </script>
 
 <style scoped lang="scss">
-.width-medium {
-  width: 160px;
+.config-container {
+  margin-top: 50px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  .author {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: url("../assets/author.jpg") no-repeat;
+    display: inline-block;
+    background-size: cover;
+    margin-left: 5px;
+  }
+  .width-medium {
+    width: 160px;
+  }
 }
 
 .ot {
-  position: absolute;
-  right: 0;
-  top: 20px;
-}
-
-.author {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: url("../assets/author.jpg") no-repeat;
-  display: inline-block;
-  background-size: cover;
-  margin-left: 5px;
+  margin: 20px;
 }
 </style>

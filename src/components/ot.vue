@@ -1,5 +1,10 @@
 <template>
-  <Card :gifts="data" v-model:remaining-time="remainingTime"></Card>
+  <Card
+    :gifts="data"
+    v-model:remaining-time="remainingTime"
+    :duration="duration"
+    :config="config"
+  ></Card>
 </template>
 
 <script setup lang="ts">
@@ -135,10 +140,28 @@ setInterval(() => {
   remainingTime.value = remainingTime.value - 1;
 }, 1000);
 
+// 持续时长
+const duration = ref(0);
+const config = ref({
+  showDuration: false,
+});
+setInterval(() => {
+  if (!runing.value) return;
+  duration.value = duration.value + 1;
+  localStorage.setItem("duration", String(duration.value));
+}, 1000);
+
+const setConfig = (key: string, value: any) => {
+  // @ts-ignore
+  config.value[key] = value;
+};
+
 defineExpose({
   start,
   stop,
   setTime,
+  setConfig,
+  config,
 });
 
 onMounted(() => {

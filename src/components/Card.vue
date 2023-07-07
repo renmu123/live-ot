@@ -5,6 +5,10 @@
       <div class="remaining-time-value">
         {{ remainingText }}
       </div>
+
+      <p class="duration" v-if="props?.config?.showDuration">
+        已开播：{{ duration }}
+      </p>
     </div>
     <div class="gift-container">
       <div class="gift-item" v-for="(item, index) in gifts" :key="index">
@@ -49,6 +53,7 @@
 import { useVModel } from "@vueuse/core";
 import type { OperationType } from "@/types/index.d.ts";
 import { OperationEnum } from "@/types/enum";
+import { formatTime } from "@/utils/index.ts";
 
 interface Props {
   gifts: {
@@ -58,6 +63,10 @@ interface Props {
     param: number;
   }[];
   remainingTime: number;
+  duration: number;
+  config?: {
+    showDuration?: boolean;
+  };
 }
 
 const props = defineProps<Props>();
@@ -66,10 +75,11 @@ const emits = defineEmits(["update:remainingTime"]);
 const remainingTime = useVModel(props, "remainingTime", emits);
 
 const remainingText = computed(() => {
-  const hour = Math.floor(remainingTime.value / 3600);
-  const minute = Math.floor((remainingTime.value % 3600) / 60);
-  const second = remainingTime.value % 60;
-  return `${hour}小时${minute}分${second}秒`;
+  return formatTime(remainingTime.value);
+});
+
+const duration = computed(() => {
+  return formatTime(props.duration);
 });
 </script>
 
@@ -79,6 +89,11 @@ const remainingText = computed(() => {
   .remaining-time-container {
     text-align: center;
     margin-bottom: 15px;
+
+    .duration {
+      margin: 0;
+      margin-top: 5px;
+    }
   }
   .gift-container {
     width: 100%;
