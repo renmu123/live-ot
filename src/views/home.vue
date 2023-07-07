@@ -17,7 +17,7 @@
         >暂停一下</el-button
       >
       <div style="display: inline-flex; align-items: center; margin-left: 10px">
-        关于作者<a
+        关于作 者<a
           href="https://space.bilibili.com/10995238"
           target="_blank"
           class="author"
