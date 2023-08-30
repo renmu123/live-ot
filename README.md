@@ -36,7 +36,7 @@ node 最低版本为 16
 
 ## Win 编译包
 
-可以在[releases](https://github.com/renmu123/live-ot/releases)中找到 Win 编译好的文件，使用`caddy`进行代理，自部署可以在 obs 使用 `http://localhost:8777` 来进行访问。
+可以在[releases](https://github.com/renmu123/live-ot/releases)中找到 Win 编译好的文件，解压后双击`caddy.vbs`运行，使用 `http://localhost:8777` 来进行访问。
 
 # TODO
 
